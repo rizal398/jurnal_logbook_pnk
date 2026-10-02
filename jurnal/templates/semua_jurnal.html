@@ -1,0 +1,312 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Semua Jurnal - Jurnal Harian</title>
+    <!-- Konfigurasi PWA & Theme Mobile -->
+    <meta name="theme-color" content="#6c5ce7">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="JurnalKu">
+    <link rel="manifest" href="{% static 'jurnal/manifest.json' %}">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-purple: #6c5ce7;
+            --primary-purple-hover: #5649c0;
+            --bg-light: #f8f9fd;
+            --card-border: #edf0f7;
+            --text-dark: #2d3436;
+            --text-muted: #8392a5;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            padding-bottom: 90px;
+        }
+
+        .navbar-mobile {
+            background: #ffffff;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .search-box {
+            background: #ffffff;
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            padding: 8px 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+        }
+
+        .search-box input {
+            border: none;
+            outline: none;
+            width: 100%;
+            background: transparent;
+            font-size: 0.9rem;
+        }
+
+        /* Filter Chips Horizontal Scroll */
+        .filter-scroll {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            white-space: nowrap;
+            padding-bottom: 4px;
+            -webkit-overflow-scrolling: touch;
+        }
+        .filter-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .filter-chip {
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            border: 1px solid var(--card-border);
+            background: #ffffff;
+            color: var(--text-dark);
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .filter-chip.active {
+            background-color: var(--primary-purple);
+            color: #ffffff;
+            border-color: var(--primary-purple);
+        }
+
+        .journal-item {
+            background: #ffffff;
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 14px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+        }
+
+        .badge-tag {
+            font-size: 0.72rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+
+        .badge-website { background: #e0e7ff; color: #4338ca; }
+        .badge-meeting { background: #ffedd5; color: #c2410c; }
+        .badge-personal { background: #dcfce7; color: #15803d; }
+        .badge-lainnya { background: #f3f4f6; color: #4b5563; }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 64px;
+            background: #ffffff;
+            border-top: 1px solid var(--card-border);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 1050;
+        }
+
+        .bottom-nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .bottom-nav a.active {
+            color: var(--primary-purple);
+        }
+
+        .bottom-nav i {
+            font-size: 1.25rem;
+            margin-bottom: 2px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Mobile -->
+    <header class="navbar-mobile px-3 py-3 sticky-top">
+        <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-2">
+                <a href="{% url 'dashboard' %}" class="btn btn-sm btn-light border rounded-circle" style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;">
+                    <i class="bi bi-chevron-left text-dark"></i>
+                </a>
+                <h6 class="mb-0 fw-bold">Semua Jurnal</h6>
+            </div>
+            <span class="badge bg-light text-secondary border">{{ total_hasil }} Item</span>
+        </div>
+    </header>
+
+    <main class="container py-3">
+        <!-- Search Bar -->
+        <form method="GET" action="{% url 'semua_jurnal' %}" class="mb-3">
+            <div class="search-box">
+                <i class="bi bi-search text-muted"></i>
+                <input type="text" name="q" value="{{ query }}" placeholder="Cari kegiatan atau catatan...">
+                {% if query %}
+                <a href="{% url 'semua_jurnal' %}" class="text-muted"><i class="bi bi-x-circle-fill"></i></a>
+                {% endif %}
+            </div>
+            {% if kategori_terpilih %}
+                <input type="hidden" name="kategori" value="{{ kategori_terpilih }}">
+            {% endif %}
+        </form>
+
+        <!-- Kategori Filter Chips -->
+        <div class="filter-scroll mb-3">
+            {% for kat in kategori_list %}
+            <a href="?kategori={% if kat == 'Semua' %}{% else %}{{ kat }}{% endif %}{% if query %}&q={{ query }}{% endif %}" 
+               class="filter-chip {% if kategori_terpilih == kat or not kategori_terpilih and kat == 'Semua' %}active{% endif %}">
+                {{ kat }}
+            </a>
+            {% endfor %}
+        </div>
+
+        <!-- Daftar Seluruh Jurnal -->
+        <section>
+            {% for item in daftar_jurnal %}
+            <article class="journal-item position-relative">
+                <div class="d-flex gap-3 align-items-start">
+                    {% if item.foto_dokumentasi %}
+                    <img src="{{ item.foto_dokumentasi.url }}" alt="{{ item.nama_kegiatan }}" class="rounded-3 object-fit-cover" style="width: 58px; height: 58px; flex-shrink: 0; cursor: pointer;" data-bs-toggle="modal" data-bs-target="#modalDetail{{ item.id }}">
+                    {% else %}
+                    <div class="rounded-3 bg-light d-flex align-items-center justify-content-center text-muted border" style="width: 58px; height: 58px; flex-shrink: 0; cursor: pointer;" data-bs-toggle="modal" data-bs-target="#modalDetail{{ item.id }}">
+                        <i class="bi bi-camera"></i>
+                    </div>
+                    {% endif %}
+
+                    <div class="flex-grow-1" style="min-width: 0;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-muted" style="font-size: 0.75rem;">
+                                {{ item.tanggal|date:"d F Y" }}
+                            </span>
+                            <!-- Dropdown Titik Tiga (Edit & Hapus) -->
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-link text-muted p-0" type="button" data-bs-toggle="dropdown">
+                                    <i class="bi bi-three-dots"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3">
+                                    <li><a class="dropdown-item small" href="{% url 'edit_jurnal' item.id %}"><i class="bi bi-pencil me-2 text-warning"></i>Edit</a></li>
+                                    <li>
+                                        <form method="POST" action="{% url 'hapus_jurnal' item.id %}" onsubmit="return confirm('Yakin ingin menghapus jurnal ini?');">
+                                            {% csrf_token %}
+                                            <button type="submit" class="dropdown-item small text-danger"><i class="bi bi-trash me-2"></i>Hapus</button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Judul Kegiatan (Klik untuk buka modal detail) -->
+                        <h6 class="fw-bold my-1 text-truncate" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#modalDetail{{ item.id }}">
+                            {{ item.nama_kegiatan }}
+                        </h6>
+
+                        <div class="d-flex align-items-center justify-content-between">
+                            <p class="text-muted small mb-0 text-truncate" style="max-width: 75%;">
+                                {{ item.catatan }}
+                            </p>
+                            <span class="badge-tag 
+                                {% if item.kategori == 'Website' %}badge-website
+                                {% elif item.kategori == 'Meeting' %}badge-meeting
+                                {% elif item.kategori == 'Personal' %}badge-personal
+                                {% else %}badge-lainnya{% endif %}">
+                                {{ item.kategori }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal Detail Pop-up -->
+                <div class="modal fade" id="modalDetail{{ item.id }}" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content rounded-4 border-0">
+                            <div class="modal-header border-0 pb-0">
+                                <span class="badge-tag 
+                                    {% if item.kategori == 'Website' %}badge-website
+                                    {% elif item.kategori == 'Meeting' %}badge-meeting
+                                    {% elif item.kategori == 'Personal' %}badge-personal
+                                    {% else %}badge-lainnya{% endif %}">
+                                    {{ item.kategori }}
+                                </span>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <small class="text-muted d-block mb-1">{{ item.tanggal|date:"l, d F Y" }}</small>
+                                <h5 class="fw-bold mb-3">{{ item.nama_kegiatan }}</h5>
+                                {% if item.foto_dokumentasi %}
+                                <img src="{{ item.foto_dokumentasi.url }}" class="w-100 rounded-3 mb-3 object-fit-cover" style="max-height: 240px;" alt="foto">
+                                {% endif %}
+                                <div class="p-3 bg-light rounded-3">
+                                    <p class="mb-0" style="white-space: pre-wrap; font-size: 0.9rem;">{{ item.catatan }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+            {% empty %}
+            <div class="text-center py-5 text-muted small bg-white rounded-4 border">
+                <i class="bi bi-search fs-2 d-block mb-2 text-secondary"></i>
+                Tidak ditemukan jurnal yang sesuai pencarian.
+            </div>
+            {% endfor %}
+        </section>
+    </main>
+
+    <!-- Bottom App Bar -->
+    <nav class="bottom-nav">
+        <a href="{% url 'dashboard' %}">
+            <i class="bi bi-house-door"></i>
+            <span>Beranda</span>
+        </a>
+        <a href="{% url 'dashboard' %}#formTambah">
+            <i class="bi bi-plus-circle"></i>
+            <span>Tambah</span>
+        </a>
+        <a href="{% url 'semua_jurnal' %}" class="active">
+            <i class="bi bi-collection-fill"></i>
+            <span>Semua</span>
+        </a>
+        <a href="#">
+            <i class="bi bi-person"></i>
+            <span>Profil</span>
+        </a>
+    </nav>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Registrasi PWA Service Worker -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register("{% static 'jurnal/sw.js' %}")
+                    .then(reg => console.log('PWA ServiceWorker terdaftar:', reg.scope))
+                    .catch(err => console.log('PWA ServiceWorker gagal:', err));
+            });
+        }
+    </script>
+</body>
+</body>
+</html>

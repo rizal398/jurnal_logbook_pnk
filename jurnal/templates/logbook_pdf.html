@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Log Book Magang - {{ profil.nama_lengkap|default:user.username }}</title>
+    <style>
+        @page {
+            size: a4 portrait;
+            margin: 1.5cm 1.5cm 1.5cm 1.5cm;
+        }
+
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            color: #000000;
+            font-size: 10pt;
+            line-height: 1.3;
+        }
+
+        .text-center { text-align: center; }
+        .text-bold { font-weight: bold; }
+
+        /* KOP FORMULIR */
+        table.kop-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+        }
+
+        table.kop-table td {
+            border: 1.5pt solid #000000;
+            vertical-align: middle;
+            padding: 6px;
+        }
+
+        .kop-logo {
+            width: 22%;
+            text-align: center;
+        }
+
+        .kop-title {
+            width: 38%;
+            text-align: center;
+            font-size: 11pt;
+            font-weight: bold;
+        }
+
+        .kop-meta {
+            width: 40%;
+            font-size: 8.5pt;
+            padding: 0 !important;
+        }
+
+        table.meta-inner {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table.meta-inner td {
+            border: none;
+            border-bottom: 1pt solid #000000;
+            padding: 4px 6px;
+        }
+        table.meta-inner tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* IDENTITAS MAHASISWA */
+        .box-identitas {
+            border: 1.5pt solid #000000;
+            padding: 14px 18px;
+            margin-bottom: 40px;
+        }
+
+        table.table-identitas {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table.table-identitas td {
+            padding: 5px 2px;
+            vertical-align: top;
+            font-size: 10pt;
+        }
+
+        .cover-footer {
+            margin-top: 50px;
+            text-align: center;
+        }
+
+        .page-break {
+            page-break-before: always;
+        }
+
+        .ketentuan-box {
+            margin-bottom: 15px;
+            font-size: 9pt;
+            line-height: 1.35;
+        }
+
+        /* TABEL LOGBOOK */
+        table.tabel-logbook {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        table.tabel-logbook th, table.tabel-logbook td {
+            border: 1pt solid #000000;
+            padding: 6px 5px;
+            font-size: 8.5pt;
+            vertical-align: top;
+        }
+
+        table.tabel-logbook th {
+            text-align: center;
+            font-weight: bold;
+            background-color: #f2f2f2;
+        }
+
+        .col-no { width: 5%; text-align: center; }
+        .col-tgl { width: 14%; text-align: center; }
+        .col-jam { width: 10%; text-align: center; }
+        .col-uraian { width: 49%; }
+        .col-paraf { width: 12%; text-align: center; }
+
+        .img-dok {
+            max-width: 160px;
+            max-height: 110px;
+            margin-top: 5px;
+            border: 0.5pt solid #ccc;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HALAMAN 1: COVER IDENTITAS -->
+    <div class="halaman-cover">
+        <table class="kop-table">
+            <tr>
+                <td class="kop-logo">
+                    <img src="https://upload.wikimedia.org/wikipedia/id/8/87/Logo_Politeknik_Negeri_Kupang.png" style="width: 70px; height: auto;" alt="Logo PNK">
+                    <div style="font-size: 8pt; font-weight: bold; margin-top: 4px;">MBK-PNK</div>
+                </td>
+                <td class="kop-title">
+                    FORMULIR<br><br>
+                    <span style="font-size: 13pt;">LOG BOOK<br>MAGANG</span>
+                </td>
+                <td class="kop-meta">
+                    <table class="meta-inner">
+                        <tr>
+                            <td style="width: 45%;">NO. Dok</td>
+                            <td style="width: 55%;">FR... ed.A rev.0</td>
+                        </tr>
+                        <tr>
+                            <td>Tgl</td>
+                            <td>{{ tgl_sekarang|date:"d/m/Y" }}</td>
+                        </tr>
+                        <tr>
+                            <td>Hal</td>
+                            <td>1/...</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+
+        <div class="box-identitas">
+            <table class="table-identitas">
+                <tr>
+                    <td style="width: 38%;">Nama Mahasiswa</td>
+                    <td style="width: 3%;">:</td>
+                    <td style="width: 59%; font-weight: bold;">{{ profil.nama_lengkap|default:user.first_name|default:user.username }}</td>
+                </tr>
+                <tr>
+                    <td>NIM</td>
+                    <td>:</td>
+                    <td>{{ profil.nim|default:user.username }}</td>
+                </tr>
+                <tr>
+                    <td>Pembimbing Lapangan Dosen</td>
+                    <td>:</td>
+                    <td>{{ profil.pembimbing_dosen|default:"..................................................." }}</td>
+                </tr>
+                <tr>
+                    <td>Pembimbing Lapangan Mitra</td>
+                    <td>:</td>
+                    <td>{{ profil.pembimbing_mitra|default:"..................................................." }}</td>
+                </tr>
+                <tr>
+                    <td>Magang</td>
+                    <td>:</td>
+                    <td>{{ profil.tempat_magang|default:"..................................................." }}</td>
+                </tr>
+                <tr>
+                    <td>Waktu Pelaksanaan</td>
+                    <td>:</td>
+                    <td>{{ profil.waktu_pelaksanaan|default:"............................ s.d ............................" }}</td>
+                </tr>
+                <tr>
+                    <td>Jumlah Konversi SKS</td>
+                    <td>:</td>
+                    <td>{{ profil.jumlah_sks|default:"20" }} SKS</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="cover-footer">
+            <div style="font-size: 12pt; font-weight: bold; margin-bottom: 25px;">
+                PROGRAM STUDI<br><br>
+                <span style="font-weight: normal;">{{ profil.program_studi|default:"..................................................." }}</span>
+            </div>
+
+            <div style="font-size: 12pt; font-weight: bold; margin-bottom: 50px;">
+                JURUSAN<br><br>
+                <span style="font-weight: normal;">{{ profil.jurusan|default:"..................................................." }}</span>
+            </div>
+
+            <div style="font-size: 13pt; font-weight: bold; letter-spacing: 1px;">
+                POLITEKNIK NEGERI KUPANG<br>
+                TAHUN {{ profil.tahun|default:"2026" }}
+            </div>
+        </div>
+    </div>
+
+    <!-- HALAMAN 2: TABEL LOGBOOK BULANAN -->
+    <div class="page-break"></div>
+
+    <div class="ketentuan-box">
+        <div style="font-weight: bold; margin-bottom: 4px;">Ketentuan Pengisian Log Book</div>
+        <div style="margin-left: 15px;">
+            1. Log Book merupakan buku catatan harian bagi mahasiswa yang terdiri atas serangkaian langkah pelaksanaan magang mulai dari persiapan, pelaksanaan, penyusunan laporan, dan seminar yang dilakukan oleh mahasiswa.<br>
+            2. Pada kolom uraian kegiatan, tuliskan semua pekerjaan yang dilakukan seperti persiapan, pelaporan, hasil, dan kesimpulan serta hal-hal yang terkait dengan semua kegiatan. Disarankan melengkapi uraian kerja dengan gambar visual.
+        </div>
+    </div>
+
+    <div style="font-weight: bold; font-size: 11pt; margin-top: 15px; margin-bottom: 6px;">
+        BULAN {{ nama_bulan|upper }} {{ tahun }}
+    </div>
+
+    <table class="tabel-logbook">
+        <thead>
+            <tr>
+                <th class="col-no">No</th>
+                <th class="col-tgl">Tanggal</th>
+                <th class="col-jam">Jam Masuk</th>
+                <th class="col-jam">Jam Pulang</th>
+                <th class="col-uraian">Uraian Kerja</th>
+                <th class="col-paraf">Paraf Pembimbing Lapangan</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in logbook_list %}
+            <tr>
+                <td class="col-no">{{ forloop.counter }}</td>
+                <td class="col-tgl">{{ item.tanggal|date:"d/m/Y" }}</td>
+                <td class="col-jam">{{ item.jam_masuk|time:"H:i" }}</td>
+                <td class="col-jam">{{ item.jam_pulang|time:"H:i" }}</td>
+                <td class="col-uraian">
+                    <div style="font-weight: bold; margin-bottom: 2px;">{{ item.nama_kegiatan }}</div>
+                    <div>{{ item.catatan|linebreaksbr }}</div>
+                    {% if item.foto_dokumentasi %}
+                    <div style="margin-top: 6px;">
+                        <img src="{{ item.foto_dokumentasi.path }}" class="img-dok" alt="dokumentasi">
+                    </div>
+                    {% endif %}
+                </td>
+                <td class="col-paraf"></td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" style="text-align: center; padding: 20px;">
+                    Belum ada catatan jurnal pada bulan {{ nama_bulan }} {{ tahun }}.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</body>
+</html>
